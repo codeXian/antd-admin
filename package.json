@@ -7,10 +7,17 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.0.0-beta.40",
+    "ant-design-pro": "^1.1.0",
     "antd": "^3.2.3",
     "babel-plugin-import": "^1.6.6",
+    "classnames": "^2.2.5",
     "dva": "^2.1.0",
+    "dva-loading": "^1.0.4",
+    "mockjs": "^1.0.1-beta3",
     "react": "^16.2.0",
+    "react-container-query": "^0.11.0",
+    "react-document-title": "^2.0.3",
     "react-dom": "^16.2.0"
   },
   "devDependencies": {
@@ -23,6 +30,7 @@
     "eslint-plugin-react": "^7.1.0",
     "husky": "^0.12.0",
     "redbox-react": "^1.4.3",
-    "roadhog": "^2.0.0"
+    "roadhog": "^2.0.0",
+    "roadhog-api-doc": "^1.0.0"
   }
 }

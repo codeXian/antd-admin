@@ -1,10 +1,12 @@
 import React, { PureComponent } from 'react';
 import { Layout, Menu, Icon } from "antd";
+import { Link } from "dva/router";
 import styles from "./index.less";
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 
+const getIcon = icon => <Icon type={icon} />
 
 class SiderMenu extends PureComponent {
   constructor(props) {
@@ -19,43 +21,77 @@ class SiderMenu extends PureComponent {
     this.setState({ collapsed });
   }
 
+  getMenuItemPath = item => {
+    const icon = getIcon(item.icon);
+    const { name } = item;
+    return (
+      <Link
+        to={item.path}
+        replace={item.path === this.props.location.pathname}
+      >
+        {icon}
+        <span>{name}</span>
+      </Link>
+    )
+  }
+
+  getSubMenuOrItem = item => {
+    if (item.children && item.children.some(child => child.name)) {
+      const childrenItems = this.getMenuNavItems(item.children);
+      // 当无子菜单的时候不显示菜单
+      if (childrenItems && childrenItems.length > 0) {
+        return (
+          <SubMenu
+            title={
+              item.icon ? (
+                <span>
+                  {getIcon(item.icon)}
+                  <span>{item.name}</span>
+                </span>
+              ) : (item.name)
+            }
+            key={item.path}
+          >
+            {childrenItems}
+          </SubMenu>
+        )
+      }
+    } else {
+      return (
+        <Menu.Item key={item.path}>{this.getMenuItemPath(item)}</Menu.Item>
+      )
+    }
+  }
+
+  getMenuNavItems = (menuData) => {
+    if (!menuData) {
+      return [];
+    }
+    return menuData.map(item => this.getSubMenuOrItem(item))
+  }
+
   render() {
+    const { menuData, logo } = this.props;
+
     return (
       <Sider width={256}
         className={styles.SiderMenu}
         collapsible
         collapsed={this.state.collapsed}
         onCollapse={this.onCollapse}
-        trigger={null}
         breakpoint='lg'>
-        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
-          <Menu.Item key="1">
-            <Icon type="pie-chart" />
-            <span>Option 1</span>
-          </Menu.Item>
-          <Menu.Item key="2">
-            <Icon type="desktop" />
-            <span>Option 2</span>
-          </Menu.Item>
-          <SubMenu
-            key="sub1"
-            title={<span><Icon type="user" /><span>User</span></span>}
-          >
-            <Menu.Item key="3">Tom</Menu.Item>
-            <Menu.Item key="4">Bill</Menu.Item>
-            <Menu.Item key="5">Alex</Menu.Item>
-          </SubMenu>
-          <SubMenu
-            key="sub2"
-            title={<span><Icon type="team" /><span>Team</span></span>}
-          >
-            <Menu.Item key="6">Team 1</Menu.Item>
-            <Menu.Item key="8">Team 2</Menu.Item>
-          </SubMenu>
-          <Menu.Item key="9">
-            <Icon type="file" />
-            <span>File</span>
-          </Menu.Item>
+        <div className={styles.logo} key="logo">
+          <Link to="/">
+            <img src={logo} alt="logo" />
+            <h1>Ant Design Pro</h1>
+          </Link>
+        </div>
+        <Menu
+          mode="inline"
+          theme="dark"
+          inlineCollapsed={this.state.collapsed}
+        >
+          {this.getMenuNavItems(menuData)}
         </Menu>
       </Sider>
     );

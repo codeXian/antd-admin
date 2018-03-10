@@ -1,16 +1,29 @@
 import React from 'react';
-import { Router, Route, Switch } from 'dva/router';
-import Login from './routes/Login';
-import BasicLayout from "./layouts/BasicLayout";
+import { Route, Switch, routerRedux } from 'dva/router';
+import Authorized from "./utils/Authorized";
+import { getRouterData } from "./common/router";
 
-function RouterConfig({ history }) {
+const { ConnectedRouter } = routerRedux;
+const { AuthorizedRoute } = Authorized;
+
+function RouterConfig({ history, app }) {
+  const routerData = getRouterData(app);
+  const UserLayout = routerData['/user'].component;
+  const BasicLayout = routerData['/'].component;
+
   return (
-    <Router history={history}>
+    <ConnectedRouter history={history}>
       <Switch>
-        <Route path="/user/login" component={Login} />
-        <Route path="/" component={BasicLayout} />
+        <Route path="/user" component={UserLayout} />
+        <AuthorizedRoute
+          path="/"
+          render={props => <BasicLayout {...props} />}
+          authority={['admin']}
+          redirectPath="/user"
+        >
+        </AuthorizedRoute>
       </Switch>
-    </Router>
+    </ConnectedRouter>
   );
 }
 
